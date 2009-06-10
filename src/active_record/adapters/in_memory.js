@@ -55,20 +55,27 @@ ActiveSupport.extend(Adapters.InMemory.prototype,{
         this.setupTable(table);
         var max = 1;
         var table_data = this.storage[table];
-        if(!data.id)
-        {
-            for(var id in table_data)
-            {
-                if(parseInt(id, 10) >= max)
-                {
-                    max = parseInt(id, 10) + 1;
-                }
-            }
-            data.id = max;
+        if (primary_key_name === 'id') {
+          if(!data.id)
+          {
+              for(var id in table_data)
+              {
+                  if(parseInt(id, 10) >= max)
+                  {
+                      max = parseInt(id, 10) + 1;
+                  }
+              }
+              data.id = max;
+          }          
+          this.lastInsertId = data.id;          
         }
-        this.lastInsertId = data.id;
-        this.storage[table][data.id] = data;
-        this.notify('created',table,data.id,data);
+        else {
+          this.lastInsertId = data[primary_key_name];          
+        }
+
+        var id = this.lastInsertId;
+        this.storage[table][id] = data;
+        this.notify('created',table,id,data);
         return true;
     },
     getLastInsertedRowId: function getLastInsertedRowId()
