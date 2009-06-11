@@ -61,7 +61,14 @@ ActiveRecord.ClassMethods.belongsTo = function belongsTo(related_model_name, opt
         var id = this.get(foreign_key);
         if (id)
         {
-            return ActiveRecord.Models[related_model_name].find(id);
+            var params = {
+              first: true,
+              where: {}
+            };
+            
+            var relatedModelPrimaryKeyName = ActiveRecord.Models[related_model_name].primaryKeyName;
+            params.where[relatedModelPrimaryKeyName] = id; 
+            return ActiveRecord.Models[related_model_name].find(params);
         }
         else
         {
